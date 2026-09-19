@@ -1,0 +1,92 @@
+#include "DHT.h" //Include Sensor library
+#include <LiquidCrystal.h> //Include LCD library
+#define DHTPIN 9      // Pin where the sensor is connected
+#define DHTTYPE DHT11 // Sensor type
+
+DHT dht(DHTPIN, DHTTYPE);
+LiquidCrystal lcd(7, 6, 5, 4, 3, 2); // RS, Enable, D4, D5, D6, D7
+
+
+int redLED = 13;
+int greenLED = 12;
+int alertbuzz = 8;
+
+
+
+
+void setup() {
+  Serial.begin(9600); // Initialize the serial monitor
+  dht.begin();        // Initialize the sensor
+  lcd.begin(16, 2);    // Set up the LCD's number of columns and rows
+  lcd.display();       // Turns on the display 
+  lcd.print("Hello, Javier!");
+  delay(2000);
+  lcd.clear();
+
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  pinMode(alertbuzz, OUTPUT);
+}
+
+void loop() {
+
+  float temperatureC = dht.readTemperature();   // Temperature in Celsius
+  
+  
+ Serial.print("Temperature: ");
+  Serial.print(temperatureC);
+  Serial.println("°C ");
+
+ lcd.setCursor(2, 0);        // Move cursor to the center top side
+  lcd.print("Temp: ");        
+  lcd.print(temperatureC, 2); // Print float with 2 decimal plac
+  lcd.print(" C   ");        
+
+  delay(1000); // Wait 1 second before refreshing the screen
+
+  delay(1000); // Delay between readings
+
+if (temperatureC >= 30.0) {
+  //  35C and more,  Red LED and Buzzer blink/beep in sync, Green turns off
+  digitalWrite(greenLED, LOW); 
+  
+  digitalWrite(redLED, HIGH);
+  digitalWrite(alertbuzz, HIGH);
+  delay(100); 
+  
+  digitalWrite(redLED, LOW);
+  digitalWrite(alertbuzz, LOW);
+  delay(100); 
+
+  digitalWrite(redLED, HIGH);
+  digitalWrite(alertbuzz, HIGH);
+  delay(100); 
+  
+  digitalWrite(redLED, LOW);
+  digitalWrite(alertbuzz, LOW);
+  delay(100); 
+
+  digitalWrite(redLED, HIGH);
+  digitalWrite(alertbuzz, HIGH);
+  delay(100); 
+  
+  digitalWrite(redLED, LOW);
+  digitalWrite(alertbuzz, LOW);
+  delay(100); 
+
+  lcd.setCursor(2, 1);
+  lcd.print("Temp TOO HIGH!");
+} 
+else {
+  //  if Less than 35C,  Green stays on, Red and Buzzer turn off
+  digitalWrite(redLED, LOW);
+  digitalWrite(alertbuzz, LOW);
+  digitalWrite(greenLED, HIGH);
+  lcd.setCursor(2, 1);
+  lcd.print("Temp Stable :)");
+}
+
+  }
+
+ 
+  
